@@ -44,6 +44,15 @@ class CalcController {
       console.log(error);
     }
   };
+
+  getAllOperations = async (req, res) => {
+    try {
+      const operations = await db.query("SELECT * FROM calculator");
+      res.status(200).json(operations.rows);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 }
 
 module.exports = new CalcController();
