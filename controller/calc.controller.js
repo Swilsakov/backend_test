@@ -74,10 +74,19 @@ class CalcController {
 
   getAllOperations = async (req, res) => {
     try {
-      const { user_id } = req.body;
+      const operations = await db.query("SELECT * FROM calculator");
+      res.status(200).json(operations.rows);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  getOperationsByUserId = async (req, res) => {
+    try {
+      const id = req.params.id;
       const operations = await db.query(
         "SELECT * FROM calculator where user_id = $1",
-        [user_id]
+        [id]
       );
       res.status(200).json(operations.rows);
     } catch (error) {
