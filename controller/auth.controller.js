@@ -58,6 +58,10 @@ class AuthController {
         ]);
         user.last_login = currentDate;
         res.status(200).json(user);
+      } else {
+        res.status(404).json({
+          message: "Invalid login or password",
+        });
       }
     } catch (error) {
       console.log(error);
