@@ -20,10 +20,9 @@ class CalcController {
         }
 
         // проверка на user_id
-        const isChecked = await db.query(
-          "SELECT user_id FROM calculator where user_id = $1",
-          [user_id]
-        );
+        const isChecked = await db.query("SELECT id FROM users where id = $1", [
+          user_id,
+        ]);
         if (isChecked.rows.length > 0) {
           // логика калькулятора
           const number1 = parseFloat(num1);
