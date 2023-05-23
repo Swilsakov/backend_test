@@ -10,7 +10,8 @@ CREATE TABLE calculator (
     id SERIAL PRIMARY KEY,
     num1 INTEGER,
     num2 INTEGER,
-    operator VARCHAR(3),
+    operator VARCHAR(1),
     result INTEGER,
-    user_id INTEGER
+    user_id INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
