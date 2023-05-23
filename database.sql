@@ -1,7 +1,7 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    username VARCHAR(255) NOT NULL UNIQUE,
-    email VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     hashed_password VARCHAR(255) NOT NULL,
     last_login TIMESTAMP
 );
@@ -10,5 +10,7 @@ CREATE TABLE calculator (
     id SERIAL PRIMARY KEY,
     num1 INTEGER,
     num2 INTEGER,
-    operator VARCHAR(3)
+    operator VARCHAR(3),
+    result INTEGER,
+    user_id INTEGER
 )
