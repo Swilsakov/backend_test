@@ -3,7 +3,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const checkSessionTimeout = async (req, res, next) => {
-  const token = req.headers.authorization || req.query.token;
+  //   const token = req.headers.authorization || req.query.token;
+  const token = req.headers["authorization"];
   if (!token) {
     return res.status(401).send("Unauthorized");
   }
@@ -11,7 +12,8 @@ const checkSessionTimeout = async (req, res, next) => {
   try {
     // Проверка валидности токена
     const decode = jwt.verify(token, "test_db");
-    const { id, email } = decode;
+    console.log(decode);
+    const { id, email, iat, exp } = decode;
 
     // Получение пользователя из базы данных
     const user = await db.query("SELECT * FROM users WHERE id = $1", [id]);
@@ -20,15 +22,17 @@ const checkSessionTimeout = async (req, res, next) => {
     }
 
     // Проверка времени последнего успешного входа и таймаута
-    const lastLogin = user.rows[0].last_login;
-    const currentTime = new Date();
-    sessionTimeout = 5 * 60 * 1000;
-    const sessionExpired =
-      lastLogin.getTime() + sessionTimeout < currentTime.getTime();
+    console.log(iat);
+    console.log(exp);
+    // const lastLogin = user.rows[0].last_login;
+    // const currentTime = new Date();
+    // sessionTimeout = 5 * 60 * 1000;
+    // const sessionExpired =
+    //   lastLogin.getTime() + sessionTimeout < currentTime.getTime();
 
-    if (sessionExpired) {
-      return res.status(401).send("Session expired");
-    }
+    // if (sessionExpired) {
+    //   return res.status(401).send("Session expired");
+    // }
 
     // Продление сессии на каждый запрос
     await db.query("UPDATE users SET last_login = NOW() WHERE id = $1", [id]);
@@ -41,3 +45,5 @@ const checkSessionTimeout = async (req, res, next) => {
     return res.status(401).send("Unauthorized");
   }
 };
+
+module.exports = checkSessionTimeout;
