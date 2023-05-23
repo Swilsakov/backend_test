@@ -1,24 +1,31 @@
 const db = require("../db");
+const jwt = require("jsonwebtoken");
 
 class CalcController {
   createOperation = async (req, res) => {
-    try {
-      // запрос на создание
-      const { num1, operator, num2, user_id } = req.body;
-      if (!(num1 && operator && num2 && user_id)) {
-        res.status(400).send("Enter all inputs");
-      }
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).send("Unauthorized");
+    }
 
-      // проверка на token
-      const token = req.headers.authorization;
-      if (token) {
+    try {
+      // проверка на сессию
+      const decoded = jwt.verify(token, "test_db");
+      const currentTime = Math.floor(Date.now() / 1000); // Текущее время в секундах
+      if (!decoded.exp <= currentTime) {
+        // запрос на создание
+        const { num1, operator, num2, user_id } = req.body;
+        if (!(num1 && operator && num2 && user_id)) {
+          res.status(400).send("Enter all inputs");
+        }
+
         // проверка на user_id
         const isChecked = await db.query(
           "SELECT user_id FROM calculator where user_id = $1",
           [user_id]
         );
         if (isChecked.rows.length > 0) {
-          // calculator logic
+          // логика калькулятора
           const number1 = parseFloat(num1);
           const number2 = parseFloat(num2);
           const operatorType = operator;
@@ -55,9 +62,12 @@ class CalcController {
           res.status(400).send("Неправильный user_id!");
         }
       } else {
-        return res.status(401).send("Unauthorized");
+        return res.status(401).send("Session expired");
       }
     } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        return res.status(401).send("Session expired (token)");
+      }
       console.log(error);
     }
   };
