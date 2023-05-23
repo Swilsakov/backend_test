@@ -17,7 +17,7 @@ const checkSessionExpiration = (req, res, next) => {
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      return res.status(401).send("Token expired");
+      return res.status(401).send("Session expired (token)");
     }
 
     console.log(error);
